@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bedrijfsparkings Lommel - geschat aantal plaatsen</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>
+  html,body{margin:0;height:100%;font-family:Arial,Helvetica,sans-serif}
+  #map{position:absolute;top:0;bottom:0;left:0;right:0;background:#e8eef2}
+  .pin{border-radius:50%;color:#fff;font-weight:bold;display:flex;align-items:center;justify-content:center;
+    border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);font-size:12px}
+  .panel{position:absolute;z-index:1000;top:12px;left:12px;background:#fff;padding:12px 14px;border-radius:8px;
+    box-shadow:0 2px 8px rgba(0,0,0,.25);max-width:260px;font-size:13px;line-height:1.4}
+  .panel h1{font-size:15px;margin:0 0 6px;color:#1F3864}
+  .legend span{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  .legend div{margin-top:3px}
+  .big{font-size:20px;font-weight:bold;color:#05B050}
+  a{color:#0563C1}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div class="panel">
+  <h1>Bedrijfsparkings Lommel</h1>
+  <div>Geschat aantal parkeerplaatsen per site (geen satelliettelling).</div>
+  <div style="margin:8px 0"><span class="big">2,325</span> plaatsen<br>over <b>43</b> parkings</div>
+  <div class="legend">
+    <div><span style="background:#1F3864"></span>&ge; 100 plaatsen</div>
+    <div><span style="background:#05B050"></span>50&ndash;99</div>
+    <div><span style="background:#9E480E"></span>25&ndash;49</div>
+    <div><span style="background:#888"></span>15&ndash;24</div>
+  </div>
+</div>
+<script>
+var sites=[{"n": "Farm Frites Belgium", "lat": 51.2389171, "lng": 5.2648014, "p": 200, "a": "Maatheide 50", "t": "Voedingsproductie"}, {"n": "ZF Wind Power", "lat": 51.2099821, "lng": 5.2644783, "p": 200, "a": "Gerard Mercatorstraat 40", "t": "Maakindustrie"}, {"n": "Ciner Glass Belgium", "lat": 51.2001218, "lng": 5.2752036, "p": 150, "a": "Marie Popelinstraat 125", "t": "Glasproductie"}, {"n": "Pelckmans Pond & Garden", "lat": 51.230094, "lng": 5.274242, "p": 150, "a": "Werkplaatsen 1", "t": "Tuincentrum"}, {"n": "ViskoTeepak", "lat": 51.2423409, "lng": 5.2547845, "p": 120, "a": "Maatheide 81", "t": "Productie"}, {"n": "RLC Ravago Lommel", "lat": 51.2095629, "lng": 5.2711547, "p": 120, "a": "Gerard Mercatorstraat 90", "t": "Kantoor + logistiek"}, {"n": "Euroglas Lommel", "lat": 51.2140425, "lng": 5.2853872, "p": 100, "a": "Marie Curiestraat 45", "t": "Glasproductie"}, {"n": "H.Essers (Balendijk)", "lat": 51.217193, "lng": 5.2855501, "p": 100, "a": "Balendijk 161", "t": "Transport/logistiek"}, {"n": "Jumbo Lommel", "lat": 51.22898, "lng": 5.3223368, "p": 100, "a": "Koning Leopoldlaan 66", "t": "Supermarkt"}, {"n": "H.Essers Kristalpark", "lat": 51.2049356, "lng": 5.2763966, "p": 80, "a": "Marie Popelinstraat 50", "t": "Logistiek"}, {"n": "Constellation Lommel", "lat": 51.2380759, "lng": 5.2698058, "p": 60, "a": "Maatheide 64", "t": "Koelopslag 24/7"}, {"n": "Brico Lommel", "lat": 51.220258, "lng": 5.3151779, "p": 60, "a": "Buitensingel 60", "t": "Doe-het-zelf"}, {"n": "Carrefour market Lommel", "lat": 51.2297473, "lng": 5.3141027, "p": 60, "a": "Kloosterstraat 22", "t": "Supermarkt"}, {"n": "Tigro Industries", "lat": 51.2110043, "lng": 5.2765305, "p": 50, "a": "Ondernemersstraat 33", "t": "Chemie/ADR"}, {"n": "NoordLink", "lat": 51.2157035, "lng": 5.2570682, "p": 50, "a": "Louis Pasteurstraat 21", "t": "Bedrijvencentrum"}, {"n": "Pelter Autogroup", "lat": 51.2336242, "lng": 5.3808942, "p": 50, "a": "Rietkolk 41", "t": "Autodealer"}, {"n": "Garage Croonen (AD)", "lat": 51.218544, "lng": 5.2711286, "p": 40, "a": "Lodewijk de Raetstraat 7", "t": "Autodealer"}, {"n": "Mols NV - Handy Home", "lat": 51.2198647, "lng": 5.2784249, "p": 40, "a": "Lodewijk de Raetstraat 38", "t": "Bouwmarkt"}, {"n": "Spar Lommel", "lat": 51.2326508, "lng": 5.3511954, "p": 40, "a": "Lutlommel 169", "t": "Supermarkt"}, {"n": "Bomet Europe", "lat": 51.2446623, "lng": 5.2629484, "p": 35, "a": "Maatheide 106", "t": "Maakindustrie"}, {"n": "Polypreen Belgie", "lat": 51.1800172, "lng": 5.2940018, "p": 35, "a": "Kerkhovensesteenweg 88", "t": "Schuim-/matrasproductie"}, {"n": "Rymoplast", "lat": 51.242978, "lng": 5.2638, "p": 30, "a": "Maatheide 94", "t": "Kunststofrecycling"}, {"n": "Garage Verheyen", "lat": 51.2323091, "lng": 5.3485022, "p": 30, "a": "Lutlommel 147", "t": "Autodealer"}, {"n": "Dex Lommel", "lat": 51.2159689, "lng": 5.2577973, "p": 30, "a": "Louis Pasteurstraat 19", "t": "Autodealer"}, {"n": "SLS Lommel", "lat": 51.2419066, "lng": 5.2643334, "p": 25, "a": "Maatheide 90", "t": "Chemie/leverancier"}, {"n": "IPL Lommel", "lat": 51.2128364, "lng": 5.2619449, "p": 25, "a": "Gerard Mercatorstraat 15", "t": "Verpakkingsproductie"}, {"n": "Aerts nv", "lat": 51.2184706, "lng": 5.283555, "p": 25, "a": "Balendijk 180", "t": "Bouwmaterialen"}, {"n": "Auto Lommel", "lat": 51.2037232, "lng": 5.307398, "p": 25, "a": "Kattenbos 106", "t": "Autodealer"}, {"n": "Rima Trans", "lat": 51.211447, "lng": 5.274254, "p": 25, "a": "Ondernemersstraat 36", "t": "Transport"}, {"n": "Metaal Techniek Belgie", "lat": 51.2398996, "lng": 5.2675297, "p": 20, "a": "Maatheide 80", "t": "Metaalbewerking"}, {"n": "Rietveld Ferricon", "lat": 51.2460218, "lng": 5.2618721, "p": 20, "a": "Maatheide 110", "t": "Maakindustrie"}, {"n": "VT Logistics", "lat": 51.2057344, "lng": 5.2786956, "p": 20, "a": "Marie Popelinstraat 21", "t": "Logistiek"}, {"n": "Edibo", "lat": 51.23988, "lng": 5.2697514, "p": 20, "a": "Maatheide 1302", "t": "Aannemer"}, {"n": "Antoma", "lat": 51.2177167, "lng": 5.2733842, "p": 20, "a": "Lodewijk de Raetstraat 6", "t": "Maakindustrie"}, {"n": "Elep nv", "lat": 51.1783485, "lng": 5.2912611, "p": 20, "a": "Kerkhovensesteenweg 92", "t": "Maakindustrie"}, {"n": "Van Daal Transport", "lat": 51.2444797, "lng": 5.3795705, "p": 20, "a": "Patrijsstraat 10", "t": "Transport"}, {"n": "ACL Garage Lommel", "lat": 51.2334284, "lng": 5.3798199, "p": 20, "a": "Rietkolk 60", "t": "Garage"}, {"n": "Garage MC Cars", "lat": 51.2174072, "lng": 5.2747273, "p": 20, "a": "Balendijk 226", "t": "Garage"}, {"n": "AutoFirst - van Alphen", "lat": 51.2182837, "lng": 5.3130644, "p": 20, "a": "Stationsstraat 176B", "t": "Garage"}, {"n": "Gear2win", "lat": 51.2193721, "lng": 5.283992, "p": 20, "a": "Lodewijk de Raetstraat 62", "t": "Fiets/auto-onderdelen"}, {"n": "Renovatiewerken VD&K", "lat": 51.215111, "lng": 5.279492, "p": 20, "a": "Rembert Dodoensstraat 15", "t": "Dakwerken/showroom"}, {"n": "Smets Lommel", "lat": 51.2468403, "lng": 5.2670377, "p": 15, "a": "Maatheide 1590", "t": "Beton/zand (te verifieren)"}, {"n": "Vanden Boer Concept", "lat": 51.2341044, "lng": 5.3805337, "p": 15, "a": "Rietkolk 30", "t": "Aannemer (te verifieren)"}];
+var map=L.map('map');
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  maxZoom:19, attribution:'&copy; OpenStreetMap'}).addTo(map);
+function colour(p){return p>=100?'#1F3864':p>=50?'#05B050':p>=25?'#9E480E':'#888';}
+function size(p){return p>=100?40:p>=50?34:p>=25?28:24;}
+var pts=[];
+sites.forEach(function(s){
+  var sz=size(s.p);
+  var icon=L.divIcon({className:'',html:'<div class="pin" style="width:'+sz+'px;height:'+sz+'px;background:'+colour(s.p)+'">'+s.p+'</div>',
+    iconSize:[sz,sz],iconAnchor:[sz/2,sz/2]});
+  var sat='https://www.google.com/maps/@'+s.lat+','+s.lng+',150m/data=!3m1!1e3';
+  var html='<b>'+s.n+'</b><br>'+s.t+'<br>'+s.a+', Lommel<br>'
+    +'<b>&asymp; '+s.p+' plaatsen</b> (geschat)<br>'
+    +'<a href="'+sat+'" target="_blank">Open satellietweergave</a>';
+  L.marker([s.lat,s.lng],{icon:icon}).addTo(map).bindPopup(html);
+  pts.push([s.lat,s.lng]);
+});
+map.fitBounds(pts,{padding:[40,40]});
+</script>
+</body>
+</html>
