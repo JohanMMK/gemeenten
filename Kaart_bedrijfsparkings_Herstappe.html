@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="nl"><head><meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bedrijfsparkings Herstappe</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<style>html,body{margin:0;height:100%;font-family:Arial,sans-serif}#map{position:absolute;inset:0;background:#e8eef2}
+.pin{border-radius:50%;color:#fff;font-weight:bold;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.4);font-size:12px}
+.panel{position:absolute;z-index:1000;top:12px;left:12px;background:#fff;padding:12px 14px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.25);max-width:260px;font-size:13px}
+.panel h1{font-size:15px;margin:0 0 6px;color:#1F3864}.big{font-size:20px;font-weight:bold;color:#05B050}</style></head>
+<body><div id="map"></div>
+<div class="panel"><h1>Bedrijfsparkings Herstappe</h1>
+<div>Geschat aantal parkeerplaatsen per site (automatische schatting, te verifi&euml;ren).</div>
+<div style="margin:8px 0"><span class="big">216</span> plaatsen<br>over <b>6</b> parkings (binnen + band)</div><div style="margin-top:8px;font-size:12px;color:#555"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#FFD400;border:1px solid #6b5300;vertical-align:middle"></span> MS-cabine &middot; <b>4</b> in band &plusmn;2 km rond grens<br><span style="font-size:11px;color:#777">Toggle rechtsboven &middot; info bij hover.</span></div><div style="margin-top:8px;font-size:12px;color:#555"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#888;opacity:0.4;border:1px solid #fff;vertical-align:middle"></span> waarvan <b>6</b> in de band van &plusmn;2 km rond de grens (mogelijke uitbreiding, lichter weergegeven).</div><div style="margin-top:8px;font-size:10px;color:#aaa">render: band-licht v6</div></div>
+<script>
+var sites=[{"n":"Intermarché","lat":50.704832,"lng":5.4055207,"p":60,"t":"supermarket","o":true},{"n":"Bedrijventerrein","lat":50.707583,"lng":5.3986305,"p":40,"t":"industrial","o":true},{"n":"Apotheek Meekers BV","lat":50.7400589,"lng":5.4143144,"p":40,"t":"commercial","o":true},{"n":"Colas","lat":50.7078741,"lng":5.4004096,"p":40,"t":"industrial","o":true},{"n":"Q8 Crisnée","lat":50.7058464,"lng":5.4046601,"p":18,"t":"retail","o":true},{"n":"TotalEnergies","lat":50.7107281,"lng":5.3934962,"p":18,"t":"yes","o":true}];
+var boundary={"type":"MultiPolygon","coordinates":[[[[5.4154372,50.7214843],[5.4156854,50.7213966],[5.4167652,50.7210177],[5.4164161,50.7206954],[5.4174929,50.7202909],[5.4195788,50.7194325],[5.41966,50.7194941],[5.4205652,50.7190236],[5.4219798,50.7199918],[5.4216026,50.7202319],[5.4219408,50.7204717],[5.423004,50.7199092],[5.4245556,50.7209936],[5.4248009,50.7211587],[5.4251525,50.7213771],[5.4275048,50.7227267],[5.4277881,50.7229228],[5.4280938,50.7231799],[5.4294334,50.7221639],[5.4299864,50.7217313],[5.4313982,50.7204497],[5.4315113,50.7203091],[5.43161,50.7201389],[5.4316731,50.7199708],[5.4317365,50.7197157],[5.431893,50.7190462],[5.4320186,50.7186975],[5.4321725,50.7183554],[5.4323482,50.7181066],[5.4352436,50.7211786],[5.4349982,50.7213187],[5.4351921,50.7216375],[5.4356709,50.7221843],[5.4358216,50.7220955],[5.4362751,50.7225564],[5.4352441,50.7230621],[5.4351802,50.7225969],[5.4336808,50.7234882],[5.4337037,50.7235016],[5.4323107,50.7243633],[5.4327627,50.7246428],[5.4319519,50.7252751],[5.4321921,50.7253056],[5.4319948,50.7260874],[5.4316704,50.7266795],[5.4306764,50.7284168],[5.4305976,50.7286439],[5.4306583,50.729521],[5.4308055,50.7313219],[5.4303313,50.7315762],[5.4306959,50.7317852],[5.4310629,50.7319945],[5.4297486,50.7325795],[5.4297468,50.732629],[5.4265973,50.7333122],[5.4269562,50.7341963],[5.4261892,50.7343655],[5.4263377,50.7346891],[5.4243852,50.7354316],[5.424151,50.7350597],[5.4237863,50.7348086],[5.4235274,50.7342902],[5.4220459,50.7319326],[5.4206793,50.7297842],[5.4162807,50.7228185],[5.4154372,50.7214843]]]]};
+var map=L.map('map');
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+var bl=null;
+if(boundary){bl=L.geoJSON(boundary,{style:{color:'#1F3864',weight:3,fill:true,fillColor:'#1F3864',fillOpacity:0.04}}).addTo(map);}
+function col(p){return p>=100?'#1F3864':p>=50?'#05B050':p>=25?'#9E480E':'#888';}
+function sz(p){return p>=100?40:p>=50?34:p>=25?28:24;}
+var pts=[];
+sites.forEach(function(s){var z=sz(s.p);
+var inner=s.o?'':s.p;
+var stl=s.o?'width:'+z+'px;height:'+z+'px;background:'+col(s.p)+';border:2px solid rgba(255,255,255,.55);opacity:.4;box-shadow:none':'width:'+z+'px;height:'+z+'px;background:'+col(s.p)+';border:2px solid #fff';
+var ic=L.divIcon({className:'',html:'<div class="pin" style="'+stl+'">'+inner+'</div>',iconSize:[z,z],iconAnchor:[z/2,z/2]});
+var sat='https://www.google.com/maps/@'+s.lat+','+s.lng+',150m/data=!3m1!1e3';
+L.marker([s.lat,s.lng],{icon:ic}).addTo(map).bindPopup('<b>'+s.n+'</b><br>'+s.t+'<br><b>&asymp; '+s.p+' plaatsen</b>'+(s.o?'<br><i>in de band van \u00b12 km rond de grens</i>':'')+'<br><a href="'+sat+'" target="_blank">Satelliet</a>');
+pts.push([s.lat,s.lng]);});
+var cabines=[{"n":"TONG_RUTT_041117","la":50.7485561,"lo":5.436843,"a":"2.269 kVA","i":"2.655 kVA","v":"TONG_TONG_040132"},{"n":"TONG_RUTT_041063","la":50.7454899,"lo":5.4296625,"a":"2.267 kVA","i":"2.655 kVA","v":""},{"n":"HEST_HERS_043003","la":50.7248112,"lo":5.4257855,"a":"1.771 kVA","i":"1.634 kVA","v":"TONG_TONG_040132"},{"n":"TONG_LAUW_041076","la":50.7348536,"lo":5.4157279,"a":"1.469 kVA","i":"1.246 kVA","v":"TONG_TONG_040132"}];
+var cabLayer=L.layerGroup();
+cabines.forEach(function(c){
+var m=L.circleMarker([c.la,c.lo],{radius:5,color:'#6b5300',weight:1,fillColor:'#FFD400',fillOpacity:0.95});
+var info='<b>MS-cabine '+c.n+'</b>';
+if(c.a)info+='<br>Restcapaciteit afname: '+c.a;
+if(c.i)info+='<br>Restcapaciteit injectie: '+c.i;
+if(c.v)info+='<br>Voeding: '+c.v;
+m.bindTooltip(info,{direction:'top',sticky:true});
+m.bindPopup(info);
+cabLayer.addLayer(m);});
+cabLayer.addTo(map);
+if(cabines.length){var cabOv={};cabOv['\u25CF MS-cabines ('+cabines.length+')']=cabLayer;L.control.layers(null,cabOv,{collapsed:false,position:'topright'}).addTo(map);}
+var allPts=pts.slice();
+cabines.forEach(function(c){allPts.push([c.la,c.lo]);});
+if(bl){var bb=bl.getBounds();allPts.push([bb.getSouth(),bb.getWest()],[bb.getNorth(),bb.getEast()]);}
+if(allPts.length){map.fitBounds(allPts,{padding:[30,30]});}
+else{map.setView([50.5,4.7],9);}
+</script></body></html>
