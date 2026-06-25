@@ -10,7 +10,7 @@
 <body><div id="map"></div>
 <div class="panel"><h1>Bedrijfsparkings Herstappe</h1>
 <div>Geschat aantal parkeerplaatsen per site (automatische schatting, te verifi&euml;ren).</div>
-<div style="margin:8px 0"><span class="big">216</span> plaatsen<br>over <b>6</b> parkings (binnen + band)</div><div style="margin-top:8px;font-size:12px;color:#555"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#FFD400;border:1px solid #6b5300;vertical-align:middle"></span> MS-cabine &middot; <b>4</b> in band &plusmn;2 km rond grens<br><span style="font-size:11px;color:#777">Toggle rechtsboven &middot; info bij hover.</span></div><div style="margin-top:8px;font-size:12px;color:#555"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#888;opacity:0.4;border:1px solid #fff;vertical-align:middle"></span> waarvan <b>6</b> in de band van &plusmn;2 km rond de grens (mogelijke uitbreiding, lichter weergegeven).</div><div style="margin-top:8px;font-size:10px;color:#aaa">render: band-licht v6</div></div>
+<div style="margin:8px 0"><span class="big">216</span> plaatsen<br>over <b>6</b> parkings (binnen + band)</div><div style="margin-top:8px;font-size:12px;color:#555"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#FFD400;border:1px solid #6b5300;vertical-align:middle"></span> MS-cabine &middot; <b>4</b> in band &plusmn;2 km rond grens<br><span style="font-size:11px;color:#777">Toggle rechtsboven &middot; info bij hover.</span></div><div style="margin-top:8px;font-size:12px;color:#555"><span style="display:inline-block;width:11px;height:11px;border-radius:50%;background:#888;opacity:0.4;border:1px solid #fff;vertical-align:middle"></span> waarvan <b>6</b> in de band van &plusmn;2 km rond de grens (mogelijke uitbreiding, lichter weergegeven).</div><div style="margin-top:8px;font-size:10px;color:#aaa">Bron bestaande laadpunten: Departement Mobiliteit en Openbare Werken (Vlaanderen) &middot; render: band-licht v10</div></div>
 <script>
 var sites=[{"n":"Intermarché","lat":50.704832,"lng":5.4055207,"p":60,"t":"supermarket","o":true},{"n":"Bedrijventerrein","lat":50.707583,"lng":5.3986305,"p":40,"t":"industrial","o":true},{"n":"Apotheek Meekers BV","lat":50.7400589,"lng":5.4143144,"p":40,"t":"commercial","o":true},{"n":"Colas","lat":50.7078741,"lng":5.4004096,"p":40,"t":"industrial","o":true},{"n":"Q8 Crisnée","lat":50.7058464,"lng":5.4046601,"p":18,"t":"retail","o":true},{"n":"TotalEnergies","lat":50.7107281,"lng":5.3934962,"p":18,"t":"yes","o":true}];
 var boundary={"type":"MultiPolygon","coordinates":[[[[5.4154372,50.7214843],[5.4156854,50.7213966],[5.4167652,50.7210177],[5.4164161,50.7206954],[5.4174929,50.7202909],[5.4195788,50.7194325],[5.41966,50.7194941],[5.4205652,50.7190236],[5.4219798,50.7199918],[5.4216026,50.7202319],[5.4219408,50.7204717],[5.423004,50.7199092],[5.4245556,50.7209936],[5.4248009,50.7211587],[5.4251525,50.7213771],[5.4275048,50.7227267],[5.4277881,50.7229228],[5.4280938,50.7231799],[5.4294334,50.7221639],[5.4299864,50.7217313],[5.4313982,50.7204497],[5.4315113,50.7203091],[5.43161,50.7201389],[5.4316731,50.7199708],[5.4317365,50.7197157],[5.431893,50.7190462],[5.4320186,50.7186975],[5.4321725,50.7183554],[5.4323482,50.7181066],[5.4352436,50.7211786],[5.4349982,50.7213187],[5.4351921,50.7216375],[5.4356709,50.7221843],[5.4358216,50.7220955],[5.4362751,50.7225564],[5.4352441,50.7230621],[5.4351802,50.7225969],[5.4336808,50.7234882],[5.4337037,50.7235016],[5.4323107,50.7243633],[5.4327627,50.7246428],[5.4319519,50.7252751],[5.4321921,50.7253056],[5.4319948,50.7260874],[5.4316704,50.7266795],[5.4306764,50.7284168],[5.4305976,50.7286439],[5.4306583,50.729521],[5.4308055,50.7313219],[5.4303313,50.7315762],[5.4306959,50.7317852],[5.4310629,50.7319945],[5.4297486,50.7325795],[5.4297468,50.732629],[5.4265973,50.7333122],[5.4269562,50.7341963],[5.4261892,50.7343655],[5.4263377,50.7346891],[5.4243852,50.7354316],[5.424151,50.7350597],[5.4237863,50.7348086],[5.4235274,50.7342902],[5.4220459,50.7319326],[5.4206793,50.7297842],[5.4162807,50.7228185],[5.4154372,50.7214843]]]]};
@@ -40,7 +40,19 @@ m.bindTooltip(info,{direction:'top',sticky:true});
 m.bindPopup(info);
 cabLayer.addLayer(m);});
 cabLayer.addTo(map);
-if(cabines.length){var cabOv={};cabOv['\u25CF MS-cabines ('+cabines.length+')']=cabLayer;L.control.layers(null,cabOv,{collapsed:false,position:'topright'}).addTo(map);}
+var chargers=[];
+var chgLayer=L.layerGroup();
+chargers.forEach(function(c){
+var ic=L.divIcon({className:'',html:'<div class="pin" style="width:22px;height:22px;background:#05B050;border:2px solid #fff;font-size:13px">&#9889;</div>',iconSize:[22,22],iconAnchor:[11,11]});
+var m=L.marker([c.la,c.lo],{icon:ic});
+var info='<b>Bestaand snellaadpunt</b>'+(c.n?'<br>'+c.n:'')+'<br>&asymp; '+c.kw+' kW';
+m.bindTooltip(info,{direction:'top',sticky:true});m.bindPopup(info);
+chgLayer.addLayer(m);});
+chgLayer.addTo(map);
+var _ov={};
+if(cabines.length)_ov['\u25CF MS-cabines ('+cabines.length+')']=cabLayer;
+if(chargers.length)_ov['&#9889; Snelladen &ge;40 kW ('+chargers.length+')']=chgLayer;
+if(Object.keys(_ov).length)L.control.layers(null,_ov,{collapsed:false,position:'topright'}).addTo(map);
 var allPts=pts.slice();
 cabines.forEach(function(c){allPts.push([c.la,c.lo]);});
 if(bl){var bb=bl.getBounds();allPts.push([bb.getSouth(),bb.getWest()],[bb.getNorth(),bb.getEast()]);}
